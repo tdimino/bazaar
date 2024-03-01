@@ -1,0 +1,11 @@
+node_modules/
+.env
+dist
+Artifex/node_modules
+Artifex/dist
+Tamar/node_modules
+Tamar/dist
+Yosef/node_modules
+Yosef/dist
+Bumbles/node_modules
+Bumbles/dist

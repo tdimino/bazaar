@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "noEmitOnError": true,
+    "skipLibCheck": true,
+    "target": "ES2022",
+    "module": "NodeNext",
+    "outDir": "dist",
+    "rootDir": ".", 
+    "strict": true,
+    "esModuleInterop": true,
+    "declaration": true,
+    "types": ["node", "mocha"],
+    "resolveJsonModule": true,
+    "moduleResolution": "Node16"
+  },
+  "include": [
+    "artifex/soul/**/*",  
+    "artifex/discord/**/*",
+    "bumbles/soul/**/*",  
+    "bumbles/discord/**/*",  
+    "tamar/soul/**/*",
+    "tamar/discord/**/*",
+    "yosef/soul/**/*",
+    "yosef/discord/**/*"
+  ],
+  "exclude": ["node_modules"]
+}

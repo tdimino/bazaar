@@ -1,0 +1,29 @@
+{
+  "name": "tamar",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "An influencer from 2038 AD",
+  "main": "dist/tamar/discord/index.js",
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "heroku-postbuild": "npm run build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "UNLICENSED",
+  "devDependencies": {
+    "@types/common-tags": "^1.8.4",
+    "@types/mocha": "^10.0.6",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "common-tags": "^1.8.2",
+    "discord.js": "^14.14.1",
+    "dotenv": "^16.4.1",
+    "lodash": "^4.17.21",
+    "socialagi": "~0.1.7",
+    "soul-engine": "^0.0.43"
+  }
+}
