@@ -23,5 +23,4 @@
     "yosef/soul/**/*",
     "yosef/discord/**/*"
   ],
-  "exclude": ["node_modules"]
 }

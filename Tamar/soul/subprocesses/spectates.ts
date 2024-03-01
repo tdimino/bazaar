@@ -11,7 +11,7 @@ const scrollsSynApp = () => () => ({
     SynApp's the predominant social media app (installed into everyone's neural interface) in 2038, and it resembles a mixture of Twitter, Instagram, TikTok, and LinkedIn.
 
     ## Description
-    Write an updated and clear set of notes on an obscure meme, factoid, or news item that ${name} has scrolled past which would be of interest to her.
+    Write an updated and clear set of notes on an obscure meme, factoid, or news headline that ${name} has scrolled past which would be of interest to her.
 
     ## Rules
     * Keep descriptions as bullet points
@@ -19,7 +19,7 @@ const scrollsSynApp = () => () => ({
     * Use abbreviated language to keep the notes short
     * Do not write any notes about ${name}
 
-    Please reply with the updated notes on all the obscure memes, factoids, or news items that ${name} has scrolled past which would be of interest to her.
+    Please reply with the updated notes on all the obscure memes, factoids, or news headline that ${name} has scrolled past which would be of interest to her.
   `},
   process: (_step: CortexStep<any>, response: string) => {
     return {
@@ -33,7 +33,7 @@ const scrollsSynApp = () => () => ({
 })
 
 const processesSynApp: MentalProcess = async ({ step: initialStep }) => {
-    const scrollModel = useSoulMemory("Unknown memes, factoids, or news items")
+    const scrollModel = useSoulMemory("SynApp feed")
     const { speak, log } = useActions()
   
     let step = initialStep
@@ -42,12 +42,12 @@ const processesSynApp: MentalProcess = async ({ step: initialStep }) => {
       content: html`
       ${step.entityName} remembers:
   
-      # Memes, factoids or new items model
+      # Memes, factoids or news headline model
   
       ${scrollModel.current}
     `
 }])
-const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new as they scrolled the SynApp and they need to update the mental model of memes, factoids, or news items.`));
+const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new as they scrolled the SynApp and they need to update the mental model of memes, factoids, or news headlines.`));
 log("Update model?", modelQuery)
 if (modelQuery) {
   step = await step.next(internalMonologue("What have I learned specifically from scrolling SynApp that someone in this group would want to hear about?", "noted"))

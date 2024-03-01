@@ -8,7 +8,7 @@ const scrollsSynApp = () => () => ({
       Model the mind of ${name} as they're scrolling the feed of the SynApp. 
 
       ## Description
-      Write an updated and clear set of notes on an obscure meme, factoid, or news item that ${name} has scrolled past which would be of interest to him.
+      Write an updated and clear set of notes on an obscure meme, factoid, or news headlines that ${name} has scrolled past which would be of interest to him.
 
       ## Rules
       * Keep descriptions as bullet points
@@ -16,7 +16,7 @@ const scrollsSynApp = () => () => ({
       * Use abbreviated language to keep the notes short
       * Do not write any notes about ${name}
 
-      Please reply with the updated notes on all the obscure memes, factoids, or news items that ${name} has scrolled past which would be of interest to him.
+      Please reply with the updated notes on all the obscure memes, factoids, or news headlines that ${name} has scrolled past which would be of interest to him.
   `},
   process: (_step: CortexStep<any>, response: string) => {
     return {
@@ -39,12 +39,12 @@ const processesSynApp: MentalProcess = async ({ step: initialStep }) => {
       content: html`
       ${step.entityName} remembers:
   
-      # Memes, factoids or news items model
+      # Memes, factoids or news headlines model
   
       ${scrollModel.current}
     `
 }])
-const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new as they scrolled the SynApp and they need to update the mental model of memes, factoids, or news items.`));
+const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new as they scrolled the SynApp and they need to update the mental model of memes, factoids, or news headlines.`));
 log("Update model?", modelQuery)
 if (modelQuery) {
   step = await step.next(internalMonologue("What have I learned specifically from scrolling SynApp that someone in this group would want to hear about?", "noted"))

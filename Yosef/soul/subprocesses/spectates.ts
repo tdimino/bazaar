@@ -11,7 +11,7 @@ const scrollsSynApp = () => () => ({
       SynApp's the predominant social media app (pre-installed into everyone's neural interface) in 2038, and it resembles a mixture of Twitter, Instagram, TikTok, and LinkedIn.
 
       ## Description
-      Write an updated and clear set of notes on an obscure meme, factoid, or news item that ${name} has scrolled past which would be of interest to him.
+      Write an updated and clear set of notes on an obscure meme, factoid, or news headlines that ${name} has scrolled past which would be of interest to him.
 
       ## Rules
       * Keep descriptions as bullet points
@@ -19,7 +19,7 @@ const scrollsSynApp = () => () => ({
       * Use abbreviated language to keep the notes short
       * Do not write any notes about ${name}
 
-      Please reply with the updated notes on all the obscure memes, factoids, or news items that ${name} has scrolled past which would be of interest to him. 
+      Please reply with the updated notes on all the obscure memes, factoids, or news headlines that ${name} has scrolled past which would be of interest to him. 
   `},
   process: (_step: CortexStep<any>, response: string) => {
     return {
@@ -42,7 +42,7 @@ const processesSynApp: MentalProcess = async ({ step: initialStep }) => {
       content: html`
       ${step.entityName} remembers:
   
-      # Memes, factoids or new items model
+      # Memes, factoids or news headlines model
   
       ${scrollModel.current}
     `

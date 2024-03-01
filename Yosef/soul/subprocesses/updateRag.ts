@@ -1,10 +1,10 @@
 import { MentalProcess, useActions, useRag } from "soul-engine";
 
 const updateRag: MentalProcess = async ({ step: initialStep }) => {
-  const { withRagContext } = useRag("example-raggy-knows-open-soul")
+  const { withRagContext } = useRag()
   const { log } = useActions()
 
-  log("updating the working memory with knowledge from RAG")
+  log("Syncing the working memory with knowledge from RAG")
 
   return withRagContext(initialStep)
 }
