@@ -33,7 +33,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
     }]) :
     initialStep;
 
-  log(`Artifex remembers this about ${userName}:\n${userModel.current}`);
+  log(`Tamar remembers this about ${userName}:\n${userModel.current}`);
 
   const { stream, nextStep } = await step.next(
     externalDialog(`Tamar feels ${tamarEmotions.current.emotion}. She wants to engage only with those who interest her, then gain their trust, and understand their inner worlds.`),

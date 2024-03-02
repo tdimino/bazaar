@@ -1,6 +1,8 @@
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, externalDialog, internalMonologue, decision, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useSoulMemory } from "soul-engine";
+import { MentalProcess, useActions, useSoulMemory, useProcessManager } from "soul-engine";
+import learnsAboutTheUser from "../subprocesses/learnsAboutTheUser.js";
+
 
 const scrollsSynApp = () => () => ({
   command: ({ entityName: name }: CortexStep) => {
@@ -8,7 +10,7 @@ const scrollsSynApp = () => () => ({
     Model the mind of ${name} as they're scrolling the feed of the SynApp. 
 
     ## SynApp
-    SynApp's the predominant social media app (installed into everyone's neural interface) in 2038, and it resembles a mixture of Twitter, Instagram, TikTok, and LinkedIn.
+    SynApp's the dominant social media app (installed into everyone's neural interface) in 2038, and it resembles a mixture of Twitter, Instagram, TikTok, and LinkedIn.
 
     ## Description
     Write an updated and clear set of notes on an obscure meme, factoid, or news headline that ${name} has scrolled past which would be of interest to her.
@@ -32,7 +34,8 @@ const scrollsSynApp = () => () => ({
   }
 })
 
-const processesSynApp: MentalProcess = async ({ step: initialStep }) => {
+const digestsSynApp: MentalProcess = async ({ step: initialStep }) => {
+    const { setNextProcess } = useProcessManager();
     const scrollModel = useSoulMemory("SynApp feed")
     const { speak, log } = useActions()
   
@@ -50,7 +53,7 @@ const processesSynApp: MentalProcess = async ({ step: initialStep }) => {
 const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new as they scrolled the SynApp and they need to update the mental model of memes, factoids, or news headlines.`));
 log("Update model?", modelQuery)
 if (modelQuery) {
-  step = await step.next(internalMonologue("What have I learned specifically from scrolling SynApp that someone in this group would want to hear about?", "noted"))
+  step = await step.next(internalMonologue("What have I learned specifically from scrolling my SynApp that someone in this group would want to hear about?", "noted"))
   log("Learnings:", step.value)
   step = await step.next(scrollsSynApp(), { model: "quality" })
   scrollModel.current = step.value
@@ -59,7 +62,7 @@ if (modelQuery) {
   const interject = await initialStep.compute
     (decision("Would it be rude to interject with what I've learned on the SynApp?", ["yes", "no"]));
 
-  log("Decision:", interject);
+  log("Decision:", interject === "yes" ? "Yes, it's rude" : "No, it's not rude");
 
   if (interject === "no") {
     // Not rude to interject
@@ -67,7 +70,8 @@ if (modelQuery) {
       Listen to what I just scrolled past on the SynApp: ${scrollModel.current}
     `, "shared"), { stream: true, model: "quality" });
     speak(stream);
-    return initialStep;
+    // Steer her back to her default mode
+    setNextProcess(learnsAboutTheUser); 
   } else {
     // Rude to interject, remain silent and go back to scrollsSynApp
     log("Decided to remain silent and continue spectating.");
@@ -78,5 +82,7 @@ if (modelQuery) {
 return initialStep
 }
 
-export default processesSynApp
+export default digestsSynApp
+export { scrollsSynApp }
+
 

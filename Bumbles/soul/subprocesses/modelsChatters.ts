@@ -58,7 +58,7 @@ const modelsChatters: MentalProcess = async ({ step: initialStep }) => {
     const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new and they need to update the mental model of ${userName}.`));
     log("Update model?", userName, modelQuery)
     if (modelQuery) {
-      step = await step.next(internalMonologue(`What has ${step.entityName} learned specifically about their chat companion from the last few messages?`, "noted"))
+      step = await step.next(internalMonologue("What has bumbles learned specifically about their chat companion from the last few messages?", "noted"))
       log("Learnings:", step.value)
       userModel.current = await step.compute(userNotes(userName))
     }
