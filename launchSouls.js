@@ -2,7 +2,7 @@ import { spawn } from 'child_process';
 import { join } from 'path';
 
 // Updated paths to the bot files for Bumbles, Artifex, and Ceres to reflect their build directories
-const bumblesPath = join('.', 'dist', 'bumbles', 'discord', 'index.js');
+// const bumblesPath = join('.', 'dist', 'bumbles', 'discord', 'index.js');
 const tamarPath = join('.', 'dist', 'tamar', 'discord', 'index.js');
 const artifexPath = join('.', 'dist', 'artifex', 'discord', 'index.js');
 const yosefPath = join('.', 'dist', 'yosef', 'discord', 'index.js');
@@ -29,7 +29,7 @@ const launchBot = (botPath) => {
 };
 
 // Launch bots with node
-launchBot(bumblesPath);
+// launchBot(bumblesPath);
 launchBot(tamarPath);
 launchBot(artifexPath);
 launchBot(yosefPath);

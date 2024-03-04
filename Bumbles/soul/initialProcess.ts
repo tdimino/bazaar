@@ -1,11 +1,13 @@
-import { ChatMessageRoleEnum, brainstorm, externalDialog } from "socialagi";
-import { MentalProcess, useActions, usePerceptions, useSoulMemory } from "soul-engine";
+import { ChatMessageRoleEnum, brainstorm, externalDialog, mentalQuery } from "socialagi";
+import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine";
+import boredom from "./mentalProcesses/boredom.js";
 // import shouts from "./mentalProcesses/shouts.js";
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   const { log, dispatch } = useActions()
   const { invokingPerception, pendingPerceptions } = usePerceptions()
+  const { setNextProcess } = useProcessManager(); // Use useProcessManager
   log("pendingPerceptions", pendingPerceptions.current)
 
   log("env: ", soul.env)
@@ -56,9 +58,19 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   })
   // speak(stream);
 
+
   let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1))
+
+  const isBored = await lastStep.compute(
+    mentalQuery("The discussion is starting to get boring, or feels like it's repeating itself")
+  );
+  log("Discussion is boring the soul?", isBored);
+  if (isBored) {
+    setNextProcess(boredom); // Correctly use setNextProcess
+  }
 
   return lastStep
 }
+
 
 export default gainsTrustWithTheUser

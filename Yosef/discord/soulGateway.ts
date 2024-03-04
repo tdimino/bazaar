@@ -5,11 +5,13 @@ import { ActionEvent, Soul, SoulEvent } from "soul-engine/soul";
 export class SoulGateway {
   private soul
   private client
+  private processedMessageIds: Set<string>; // Add this line
 
   private lastMessage: any
 
   constructor(client: Client) {
     this.client = client
+    this.processedMessageIds = new Set(); // Initialize the set
     this.soul = new Soul({
       organization: "tdimino",
       blueprint: "yosef",
@@ -48,9 +50,23 @@ export class SoulGateway {
     this.lastMessage.react(await evt.content())
   }
 
-  handleMessage(discordMessage: Message) {
-    // // Ignore messages from bots
-    // if (discordMessage.author.bot) return;
+  async handleMessage(discordMessage: Message) {
+    // Check if the message has already been processed
+    if (this.processedMessageIds.has(discordMessage.id)) {
+      return; // Skip processing
+    }
+
+    // Add the message ID to the set to mark it as processed
+    this.processedMessageIds.add(discordMessage.id);
+
+    // Implement a mechanism to limit the size of the set to prevent memory issues
+    if (this.processedMessageIds.size > 1000) { // Example limit
+      const oldestId = this.processedMessageIds.values().next().value;
+      this.processedMessageIds.delete(oldestId);
+    }
+
+    // Ignore messages from yourself
+    if (discordMessage.member?.displayName === "Tamar de Minos") return;
 
     // bot experimentation channel:
     if (discordMessage.channelId !== process.env.DISCORD_DEPLOYMENT_BAZAAR_CHANNEL) return;
@@ -76,7 +92,6 @@ export class SoulGateway {
   }
 
   
-
   onSoulEvent(evt: SoulEvent) {
     console.log("soul event!", evt)
   }
@@ -94,3 +109,4 @@ export class SoulGateway {
 
   }
 }
+

@@ -1,29 +1,11 @@
-import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
+import { ChatMessageRoleEnum, externalDialog, decision, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; // Import useProcessManager
 import shouts from "./mentalProcesses/shouts.js";
 import boredom from "./mentalProcesses/boredom.js";
+
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
-// Artifex makes a grand entrance, like a wrestler entering the ring (adapted from Alfred's 'initial process').
-
-const introduction: MentalProcess = async ({ step: initialStep }) => {
-  const { speak, log } = useActions()
-  const { invocationCount, setNextProcess } = useProcessManager()
-
-  if (invocationCount === 0) {
-    const { stream, nextStep } = await initialStep.next(
-      externalDialog("Greet the Bazaar in the most bombastic way possible."), 
-      { stream: true, model: "quality" }
-    );
-    speak(stream);
-    return nextStep
-  } else {
-    return initialStep
-  }
-}
-
 // Artifex informs Tamar how many followers she's gained or lost on the SynApp every 5 minutes.
-
 
 // Artifex returns to his default process, observing his environment, and recording the interactions of Tamar so he can curate and upload them to the SynApp in a "Best Hits" reel later that night. 
 
@@ -44,7 +26,20 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   const userName = discordMessage?.username || "Anonymous";
   const userModel = useSoulMemory(userName, "");
 
-  // Artifex has a limited spectrum of emotions by design, so he's not quite as emotional as humans, or even stuffed sentient animals like Bumbles.
+// Artifex addresses only those who speak to him or Tamar directly.
+
+  const shouldObserve = await initialStep.compute(
+    decision("Interlocutor addressed me by name?", ["yes", "no"])
+  );
+  log("Interlocutor has ignored Artifex", shouldObserve);
+  if (shouldObserve === "no") {
+    return initialStep.withMemory([{
+      role: ChatMessageRoleEnum.Assistant,
+      content: `Artifex is ignoring ${userName} because they didn't address him or Tamar directly.`
+    }]);
+  }
+
+// Artifex has a limited spectrum of emotions by design, so he's not quite as emotional as humans, or even stuffed sentient animals like Bumbles.
 
   const artifexEmotions = useSoulMemory("emotionalState", defaultEmotion);
 

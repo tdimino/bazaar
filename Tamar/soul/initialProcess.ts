@@ -1,6 +1,7 @@
 import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; // Import useProcessManager
 import boredom from "./mentalProcesses/boredom.js";
+import assessment from "./mentalProcesses/assessment.js";
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
 // Tamar defaults to gaining the trust of fellow influencers
@@ -29,14 +30,14 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   let step = userModel.current ?
     initialStep.withMemory([{
       role: ChatMessageRoleEnum.Assistant,
-      content: `Tamar feels ${tamarEmotions.current.emotion}. She wants to engage only with those who have as many followers as her, then gain their trust, and understand their inner worlds.`
+      content: `Tamar feels ${tamarEmotions.current.emotion}. She wants to engage people of interest, then gain their trust, and understand their inner worlds.`
     }]) :
     initialStep;
 
   log(`Tamar remembers this about ${userName}:\n${userModel.current}`);
 
   const { stream, nextStep } = await step.next(
-    externalDialog(`Tamar feels ${tamarEmotions.current.emotion}. She wants to engage only with those who interest her, then gain their trust, and understand their inner worlds.`),
+    externalDialog(`Tamar feels ${tamarEmotions.current.emotion}. She wants to engage people of interest, then gain their trust, and understand their inner worlds.`),
     { stream: true, model: "quality" }
   );
   
@@ -50,7 +51,13 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
 
   let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
 
-  // Boredom keeps these chatty birds from bankrupting Kev and Topper, and makes the ebb and flow of the group discussions more realistic.
+  const shouldObserve = await lastStep.compute(
+    mentalQuery("The interlocuter has not addressed me directly by my first name.")
+  );
+  log("Interlocutor did not address Tamar directly", shouldObserve);
+  if (shouldObserve) {
+    setNextProcess(boredom); // Correctly use setNextProcess
+  }
 
   const isBored = await lastStep.compute(
     mentalQuery("The discussion is starting to get boring, or feels like it's repeating itself")
@@ -63,4 +70,5 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   return lastStep;
 }
 
-export default gainsTrustWithTheUser
+export default gainsTrustWithTheUser;
+

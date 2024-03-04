@@ -1,6 +1,7 @@
 import { MentalProcess, useActions, useRag } from "soul-engine";
 
 const updateRag: MentalProcess = async ({ step: initialStep }) => {
+  // @ts-ignore
   const { withRagContext } = useRag()
   const { log } = useActions()
 

@@ -1,7 +1,7 @@
 import { html } from "common-tags";
 import { internalMonologue, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
-import scrollsSynApp from "../subprocesses/spectates.js";
+import initialProcess from "../initialProcess.js";
 
 const boredom: MentalProcess = async ({ step: initialStep }) => {
   const { speak, log } = useActions();
@@ -19,20 +19,20 @@ const boredom: MentalProcess = async ({ step: initialStep }) => {
   );
 
   const lastStep = await nextStep;
-  const isBored = await lastStep.compute(
-    mentalQuery("I don't want to continue actively engaging in this conversation, and there's probably something more interesting happening on the SynApp.")
+  const shouldSpectate = await lastStep.compute(
+    mentalQuery("Nothing new is being said, and I'm not interested in this conversation.")
   );
-  log("Is the soul bored?", isBored);
-  if (isBored) {
+  log("Should the soul spectate?", shouldSpectate);
+  if (shouldSpectate) {
     spectate.current = true;
     log("Entering spectate mode.");
-    // Explicitly set the next process to spectate if the soul is bored
-    setNextProcess(scrollsSynApp); 
   } else {
     spectate.current = false;
+    setNextProcess(initialProcess); 
   }
 
-  return lastStep;
+  return initialStep;
 };
 
 export default boredom;
+

@@ -4,8 +4,8 @@ import { androidEmotions } from "../lib/android-emotions.js";
 import { html } from "common-tags";
 
 export const defaultEmotion = {
-  emotion: "Contempt",
-  why: "Artifex has no respect for anyone in the Bazaar except Tamar."
+  emotion: "Sardonic",
+  why: "Artifex is amused by human civilization, and the professional state of most humans."
 }
 
 const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {

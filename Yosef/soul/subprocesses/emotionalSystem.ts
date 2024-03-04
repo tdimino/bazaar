@@ -4,8 +4,8 @@ import { humanEmotions } from "../lib/emotions.js";
 import { html } from "common-tags";
 
 export const defaultEmotion = {
-  emotion: "Sexual Desire",
-  why: "Yosef is a red-blooded male at the virile age of 18, and he's surrounded by beautiful women."
+  emotion: "Aesthetic Appreciation",
+  why: "Yosef is a red-blooded male, and he's surrounded by beautiful women."
 }
 
 const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
@@ -33,4 +33,4 @@ const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
   return initialStep
 }
 
-export default emotionalSystem
+export default emotionalSystem;

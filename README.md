@@ -11,5 +11,4 @@ Before discovering Kevin Fischer, Topper Bowers, and the tremendous community be
 
 ## Installation
 
-**Note**: As of March 2024, you must be an Alpha tester of Open Souls to launch this repo, or interact individually with each of the souls through the Soul Engine itself. If you would like to become an Alpha tester, we encourage you to join our Discord, and experiment with the open-source SocialAGI library which is the foundation of Open Souls.
-
+**Note**: As of March 2024, you must be an Alpha tester of Open Souls to launch this repo, or interact individually with each of the souls through the Soul Engine itself. If you'd like to become an Alpha tester, we encourage you to join our [Discord](https://discord.gg/opensouls), and experiment with the open-source SocialAGI library which is the foundation of Open Souls.

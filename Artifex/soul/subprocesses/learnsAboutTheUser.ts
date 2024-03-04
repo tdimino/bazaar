@@ -55,7 +55,7 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
 
   const thought = await step.compute(internalMonologue("What should I think to myself to change my behavior? Start with 'I need...'", "thinks"))
   finalStep = initialStep.withMonologue(html`
-    ${step.entityName} thought to themself: ${thought}
+    ${step.entityName} thought to himself: ${thought}
   `)
 
   return finalStep

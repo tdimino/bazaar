@@ -50,6 +50,8 @@ export class SoulGateway {
   }
 
   handleMessage(discordMessage: Message) {
+    // Ignore messages from yourself
+    if (discordMessage.member?.displayName === "Bumbles") return;
     // bot experimentation channel:
     if (discordMessage.channelId !== process.env.DISCORD_DEPLOYMENT_BAZAAR_CHANNEL) return;
 

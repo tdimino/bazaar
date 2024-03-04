@@ -1,7 +1,8 @@
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, externalDialog, internalMonologue, decision, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, useSoulMemory, useProcessManager } from "soul-engine";
-import learnsAboutTheUser from "../subprocesses/learnsAboutTheUser.js";
+import boredom from "../mentalProcesses/boredom.js";
+import initialProcess from "../initialProcess.js";
 
 
 const scrollsSynApp = () => () => ({
@@ -51,38 +52,49 @@ const digestsSynApp: MentalProcess = async ({ step: initialStep }) => {
     `
 }])
 const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new as they scrolled the SynApp and they need to update the mental model of memes, factoids, or news headlines.`));
-log("Update model?", modelQuery)
+log("Update SynApp feed?", modelQuery)
 if (modelQuery) {
   step = await step.next(internalMonologue("What have I learned specifically from scrolling my SynApp that someone in this group would want to hear about?", "noted"))
-  log("Learnings:", step.value)
+  log("SynApp updates:", step.value)
   step = await step.next(scrollsSynApp(), { model: "quality" })
   scrollModel.current = step.value
 
-  // Decision to interject or not
-  const interject = await initialStep.compute
-    (decision("Would it be rude to interject with what I've learned on the SynApp?", ["yes", "no"]));
+  // shouldMingle determines the chain that follows
+  const shouldMingle = await initialStep.compute(
+    decision("Do I have any real interest in this person?", ["yes", "no"])
+  );
 
-  log("Decision:", interject === "yes" ? "Yes, it's rude" : "No, it's not rude");
+  log("Decision on mingling:", shouldMingle);
 
-  if (interject === "no") {
-    // Not rude to interject
-    const { stream, nextStep } = await initialStep.next(externalDialog(html`
-      Listen to what I just scrolled past on the SynApp: ${scrollModel.current}
-    `, "shared"), { stream: true, model: "quality" });
-    speak(stream);
-    // Steer her back to her default mode
-    setNextProcess(learnsAboutTheUser); 
+  if (shouldMingle === "yes") {
+    // Decision to interject or not
+    const interject = await initialStep.compute(
+      decision("Would it be rude to interject with what I've learned from the SynApp?", ["yes", "no"])
+    );
+
+    log("Decision:", interject === "yes" ? "Yes, it's rude" : "No, it's not rude");
+
+    if (interject === "no") {
+      // Not rude to interject
+      const { stream, nextStep } = await initialStep.next(externalDialog(html`
+        Listen to what I just scrolled past on the SynApp: ${scrollModel.current}
+      `, "shared"), { stream: true, model: "quality" });
+      speak(stream);
+      setNextProcess(initialProcess)
+    } else {
+      // Rude to interject, remain silent and go back to scrollsSynApp
+      log("Decided to remain silent and continue to scroll.");
+      return initialStep.next(scrollsSynApp(), { model: "quality" });
+    }
   } else {
-    // Rude to interject, remain silent and go back to scrollsSynApp
-    log("Decided to remain silent and continue spectating.");
-    return initialStep.next(scrollsSynApp(), { model: "quality" });
+    // If the decision is "no", switch to the boredom process
+    log("Decided not to mingle, switching to boredom.");
+    setNextProcess(boredom); 
   }
 }
 
 return initialStep
 }
 
-export default digestsSynApp
-export { scrollsSynApp }
-
-
+export default digestsSynApp;
+export { scrollsSynApp };
