@@ -4,9 +4,18 @@ import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "sou
 import initialProcess from "../initialProcess.js";
 
 const boredom: MentalProcess = async ({ step: initialStep }) => {
+
+  //Thiago's "lastProcess" trick to 'set' the mentalProcess in memory
+
+  const lastProcess = useSoulMemory("lastProcess", "");
+  lastProcess.current = "boredom";
+
   const { speak, log } = useActions();
   const { setNextProcess } = useProcessManager();
   const spectate = useSoulMemory("SynApp feed", false);
+
+  // Logging the current value of lastProcess
+  log(`Current lastProcess: ${lastProcess.current}`);
 
   const nextStep = initialStep.next(
     internalMonologue(html`
@@ -22,17 +31,18 @@ const boredom: MentalProcess = async ({ step: initialStep }) => {
   const shouldSpectate = await lastStep.compute(
     mentalQuery("Nothing new is being said, and I'm not interested in this conversation.")
   );
-  log("Should the soul spectate?", shouldSpectate);
+  log("Should the soul be scrolling?", shouldSpectate);
   if (shouldSpectate) {
     spectate.current = true;
-    log("Entering spectate mode.");
-    setNextProcess(boredom); 
+    log("Refreshing my SynApp feed.");
   } else {
     spectate.current = false;
+    lastProcess.current = "initialProcess";
     setNextProcess(initialProcess); 
+    log("I'll give them another chance.");
   }
 
-  return initialStep;
+  return lastStep;
 };
 
 export default boredom;

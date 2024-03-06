@@ -1,20 +1,17 @@
 import { Client, Events, Message } from "discord.js";
 import { ActionEvent, Soul, SoulEvent } from "soul-engine/soul";
 
+
 export class SoulGateway {
   private soul
   private client
-  private processedMessageIds: Set<string>;
-  private interactionRequestIds: Set<string>; // Cache for InteractionRequest IDs to ensure idempotency
-  private messageTimestampThreshold: number; // Timestamp threshold for message processing
+  private processedMessageIds: Set<string>; // Add this line
 
   private lastMessage: any
 
   constructor(client: Client) {
     this.client = client
-    this.processedMessageIds = new Set();
-    this.interactionRequestIds = new Set(); // Initialize the cache for InteractionRequest IDs
-    this.messageTimestampThreshold = Date.now() - (1000 * 60 * 5); // Set threshold to 5 minutes ago
+    this.processedMessageIds = new Set(); // Initialize the set
     this.soul = new Soul({
       organization: "tdimino",
       blueprint: "yosef",
@@ -45,39 +42,36 @@ export class SoulGateway {
   stop() {
     this.client.off(Events.MessageCreate, this.handleMessage);
 
-    return this.soul.disconnect()
+    return this.soul.disconnect() // this handles listener cleanup
   }
 
   async handleEmojiReaction(evt: ActionEvent) {
     console.log("reacts!", evt)
-    if (this.interactionRequestIds.has(evt.id)) return;
-    this.interactionRequestIds.add(evt.id);
-
     this.lastMessage.react(await evt.content())
   }
 
-  private shouldProcessMessage(discordMessage: Message): boolean {
-    if (discordMessage.author.id === this.client.user?.id) return false;
-    if (this.processedMessageIds.has(discordMessage.id)) return false;
-    if (discordMessage.createdTimestamp < this.messageTimestampThreshold) return false;
-    return true;
-  }
-
   async handleMessage(discordMessage: Message) {
-    if (!this.shouldProcessMessage(discordMessage)) {
-      return;
+    // Check if the message has already been processed
+    if (this.processedMessageIds.has(discordMessage.id)) {
+      return; // Skip processing
     }
 
+    // Add the message ID to the set to mark it as processed
     this.processedMessageIds.add(discordMessage.id);
 
-    if (this.processedMessageIds.size > 1000) {
+    // Implement a mechanism to limit the size of the set to prevent memory issues
+    if (this.processedMessageIds.size > 1000) { // Example limit
       const oldestId = this.processedMessageIds.values().next().value;
       this.processedMessageIds.delete(oldestId);
     }
 
+    // Ignore messages from yourself
+    if (discordMessage.member?.displayName === "Yosef") return;
+
+    // bot experimentation channel:
     if (discordMessage.channelId !== process.env.DISCORD_DEPLOYMENT_BAZAAR_CHANNEL) return;
 
-    this.lastMessage = discordMessage;
+    this.lastMessage = discordMessage
 
     this.soul.dispatch({
       action: "said",
@@ -88,6 +82,7 @@ export class SoulGateway {
           id: discordMessage.id,
           channelId: discordMessage.channelId,
           guildId: discordMessage.guildId,
+          timestamp: new Date(discordMessage.createdTimestamp).toISOString(),
           authorId: discordMessage.author.id,
           username: discordMessage.author.username,
           avatar: discordMessage.author.avatarURL(),
@@ -97,24 +92,21 @@ export class SoulGateway {
     })
   }
 
+  
   onSoulEvent(evt: SoulEvent) {
     console.log("soul event!", evt)
-    if (this.interactionRequestIds.has(evt.id)) return;
-    this.interactionRequestIds.add(evt.id);
   }
 
   async onChats(evt: ActionEvent) {
     console.log("chats!", evt)
     const { content } = evt
 
-    if (this.interactionRequestIds.has(evt.id)) return;
-    this.interactionRequestIds.add(evt.id);
-
     const channel = await this.client.channels.fetch(process.env.DISCORD_DEPLOYMENT_BAZAAR_CHANNEL!)
     if (channel && channel.isTextBased()) {
       channel.send({
         content: await content(),
-      }).catch(console.error); // Error handling
+      })
     }
+
   }
 }

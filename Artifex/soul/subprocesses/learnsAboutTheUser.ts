@@ -47,7 +47,7 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
   }])
 
   step = await step.next(
-    internalMonologue("What have I learned specifically about the interlocutors from the last few messages?", "noted"),
+    internalMonologue("What have I learned specifically about the interlocutor from the last few messages?", "noted"),
     { model: "quality" }
   )
   log("Learnings:", step.value)

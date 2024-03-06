@@ -1,19 +1,22 @@
-import { ChatMessageRoleEnum, externalDialog, decision, mentalQuery } from "socialagi";
+import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; // Import useProcessManager
 import shouts from "./mentalProcesses/shouts.js";
 import boredom from "./mentalProcesses/boredom.js";
+import awkward from "./mentalProcesses/awkward.js";
 
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
-// Artifex informs Tamar how many followers she's gained or lost on the SynApp every 5 minutes.
+// Artifex scopes out the scene
 
+// Artifex informs Tamar how many followers she's gained or lost on the SynApp every 5 minutes.
+  
 // Artifex returns to his default process, observing his environment, and recording the interactions of Tamar so he can curate and upload them to the SynApp in a "Best Hits" reel later that night. 
 
 const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   const { log, dispatch } = useActions();
   const { invokingPerception, pendingPerceptions } = usePerceptions();
   const { setNextProcess } = useProcessManager(); // Use useProcessManager
-
+  
   log("pendingPerceptions", pendingPerceptions.current);
   log("env: ", soul.env);
 
@@ -26,18 +29,11 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   const userName = discordMessage?.username || "Anonymous";
   const userModel = useSoulMemory(userName, "");
 
-// Artifex addresses only those who speak to him or Tamar directly.
+//Thiago's "lastProcess" trick to 'set' the mentalProcess in memory
 
-  const shouldObserve = await initialStep.compute(
-    decision("Interlocutor addressed me by name?", ["yes", "no"])
-  );
-  log("Interlocutor has ignored Artifex", shouldObserve);
-  if (shouldObserve === "no") {
-    return initialStep.withMemory([{
-      role: ChatMessageRoleEnum.Assistant,
-      content: `Artifex is ignoring ${userName} because they didn't address him or Tamar directly.`
-    }]);
-  }
+  const lastProcess = useSoulMemory("lastProcess", "");
+  lastProcess.current = "initialProcess";
+  log(`Current lastProcess: ${lastProcess.current}`);
 
 // Artifex has a limited spectrum of emotions by design, so he's not quite as emotional as humans, or even stuffed sentient animals like Bumbles.
 
@@ -46,14 +42,14 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   let step = userModel.current ?
     initialStep.withMemory([{
       role: ChatMessageRoleEnum.Assistant,
-      content: `Artifex remembers this about ${userName}:\n${userModel.current}`
+      content: `Artifex remembers this about ${userName}:\n${userModel.current}; and how ${userName} contributed to ${userName}'s ${artifexEmotions.current.emotion}`
     }]) :
     initialStep;
 
   log(`Artifex remembers this about ${userName}:\n${userModel.current}`);
 
   const { stream, nextStep } = await step.next(
-    externalDialog(`Artifex feels ${artifexEmotions.current.emotion}. He wants to engage only with those who interest him, then gain their trust, and understand their inner worlds.`),
+    externalDialog(`Artifex feels ${artifexEmotions.current.emotion}. He wants to engage only with people who interest him, then gain their trust, and understand their inner worlds.`),
     { stream: true, model: "quality" }
   );
   
@@ -74,16 +70,31 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   );
   log("Discussion is boring the soul?", isBored);
   if (isBored) {
+    lastProcess.current = "boredom";
     setNextProcess(boredom); // Correctly use setNextProcess
+    return lastStep;
+  }
+
+  // Awkwardness is a spell for silence like nothing else. 
+
+  const isAwkward = await lastStep.compute(
+    mentalQuery("The discussion is getting awkward or offensive")
+  );
+  log("Discussion is too awkward for the soul?", isAwkward);
+  if (isAwkward) {
+    lastProcess.current = "awkward";
+    setNextProcess(awkward); // Correctly use setNextProcess
+    return lastStep;
   }
 
   // Artifex was designed by Tamar's father, an AI entrepreneur, so naturally he protects her from the creeps at the Bazaar.
 
   const shouldShout = await lastStep.compute(
-    mentalQuery("The interlocuter is being rude, pedantic, or sexually aggressive toward Tamar")
+    mentalQuery("The interlocuter is being sexually aggressive toward Tamar")
   );
-  log("User attacked soul?", shouldShout);
+  log("User made advances on Tamar?", shouldShout);
   if (shouldShout) {
+    lastProcess.current = "shouts";
     setNextProcess(shouts); // Correctly use setNextProcess
   }
 

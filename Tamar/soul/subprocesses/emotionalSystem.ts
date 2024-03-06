@@ -1,5 +1,5 @@
 import { decision, internalMonologue } from "socialagi";
-import { MentalProcess, useActions, useSoulMemory } from "soul-engine";
+import { MentalProcess, useActions, useSoulMemory, usePerceptions } from "soul-engine";
 import { humanEmotions } from "../lib/emotions.js";
 import { html } from "common-tags";
 
@@ -10,13 +10,16 @@ export const defaultEmotion = {
 
 const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
   const { log } = useActions()
+  const { invokingPerception } = usePerceptions();
   const tamarEmotions = useSoulMemory("emotionalState", defaultEmotion)
 
+  const discordMessage = invokingPerception?._metadata?.discordMessage as any;
+  const userName = discordMessage?.username || "Anonymous";
 
   const emotionalStep = await initialStep.next(internalMonologue(html`
     Tamar currently feels: ${tamarEmotions.current.emotion}.
     Has anything happened that would change how Tamar feels?
-    Respond with how Tamar is feeling. Make sure to include one of these emotions: ${humanEmotions.join(", ")} and a very short sentence as to why she feels that way.
+    Respond with how Tamar is feeling. Make sure to include one of these emotions: ${humanEmotions.join(", ")} and a very short sentence as to why she feels that way because of ${userName}.
   `, 'felt'))
   log("Tamar's feelings", emotionalStep.value)
 

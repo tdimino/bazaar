@@ -40,7 +40,7 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
     content: html`
     ${step.entityName} remembers:
 
-    # User model
+    # Interlocutor model
 
     ${userModel.current}
   `

@@ -25,7 +25,6 @@ function setupProject(fullPath) {
 // List of project directories one level below this script's location
 const projectDirs = [
   'Artifex',
-  'Bumbles',
   'Tamar',
   'Yosef',
   // Add more project directories as needed

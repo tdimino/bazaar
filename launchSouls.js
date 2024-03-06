@@ -3,9 +3,9 @@ import { join } from 'path';
 
 // Updated paths to the bot files for Bumbles, Artifex, and Ceres to reflect their build directories
 // const bumblesPath = join('.', 'dist', 'bumbles', 'discord', 'index.js');
-const tamarPath = join('.', 'dist', 'tamar', 'discord', 'index.js');
-const artifexPath = join('.', 'dist', 'artifex', 'discord', 'index.js');
-const yosefPath = join('.', 'dist', 'yosef', 'discord', 'index.js');
+const tamarPath = join('.', 'Tamar', 'dist', 'discord', 'index.js');
+const artifexPath = join('.', 'Artifex', 'dist', 'discord', 'index.js');
+const yosefPath = join('.', 'Yosef', 'dist', 'discord', 'index.js');
 
 // Function to launch bots
 const launchBot = (botPath) => {
