@@ -3,11 +3,12 @@
   "version": "0.0.1",
   "type": "module",
   "description": "An influencer from 2038 AD",
-  "main": "dist/tamar/discord/index.js",
+  "main": "dist/discord/index.js",
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "start": "bun discord/index.ts"
   },
   "keywords": [],
   "author": "",
@@ -24,6 +25,6 @@
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
     "socialagi": "~0.1.7",
-    "soul-engine": "^0.0.45"
+    "soul-engine": "^0.0.47"
   }
 }

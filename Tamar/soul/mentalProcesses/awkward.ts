@@ -1,5 +1,5 @@
 import { html } from "common-tags";
-import { internalMonologue, mentalQuery, decision } from "socialagi";
+import { internalMonologue, mentalQuery, decision, externalDialog } from "socialagi";
 import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
 import initialProcess from "../initialProcess.js";
 import { tamarInterests } from "../lib/interests.js";
@@ -18,7 +18,7 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
   const lastProcess = useSoulMemory("lastProcess", "");
   lastProcess.current = "awkward";
 
-  const { log } = useActions();
+  const { speak, log } = useActions();
   const { setNextProcess } = useProcessManager();
   const spectate = useSoulMemory("SynApp feed", false);
   
@@ -36,12 +36,12 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
 
   const lastStep = await nextStep;
   const shouldSpectate = await lastStep.compute(
-    mentalQuery("The discussion is getting less awkward?")
+    mentalQuery("The discussion is getting less awkward.")
   );
-  log("Should the soul keep scrolling?", shouldSpectate);
+  log("Discussion is less awkward?", shouldSpectate);
   if (shouldSpectate) {
     spectate.current = true;
-    log("Refreshing my SynApp feed.");
+    log("Shaking off this awkwardness.");
   } else {
     const finalStep = lastStep.withMonologue(html`
       ${initialStep.entityName} thought to himself: Respond with the topic that Tamar would rather talk about. Make sure to include one of these topics: ${tamarInterests.join(", ")} and a very short sentence as to why she chose that one.
@@ -55,7 +55,12 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
     }
     lastProcess.current = "initialProcess";
     setNextProcess(initialProcess)
+
     log(`Tamar is changing the topic of discussion to one of these interests: ${tamarTopics.current.topic}`);
+
+    const nextStep = await initialStep.next(externalDialog("Tamar tries to change the topic of discussion to the one she just chose.", tamarTopics.current.topic), { model: "quality" })
+    speak(nextStep.value)
+
     return finalStep
   }
 

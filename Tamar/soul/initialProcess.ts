@@ -1,5 +1,5 @@
-import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; // Import useProcessManager
+import { ChatMessageRoleEnum, spokenDialog, internalMonologue, mentalQuery, decision } from "socialagi";
+import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; 
 import boredom from "./mentalProcesses/boredom.js";
 import awkward from "./mentalProcesses/awkward.js";
 
@@ -8,7 +8,7 @@ import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 // Tamar defaults to gaining the trust of fellow influencers
 
 const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
-  const { log, dispatch } = useActions();
+  const { speak, log, dispatch } = useActions();
   const { invokingPerception, pendingPerceptions } = usePerceptions();
   const { setNextProcess } = useProcessManager(); // Use useProcessManager
 
@@ -37,17 +37,23 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   let step = userModel.current ?
     initialStep.withMemory([{
       role: ChatMessageRoleEnum.Assistant,
-      content: `Tamar feels ${tamarEmotions.current.emotion}. She wants to engage people of interest, then gain their trust, and understand their inner worlds.`
+      content: `Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`
     }]) :
     initialStep;
 
   log(`Tamar remembers this about ${userName}:\n${userModel.current}`);
 
-  const { stream, nextStep } = await step.next(
-    externalDialog(`Tamar feels ${tamarEmotions.current.emotion}. She wants to engage only with people who interest her, then gain their trust, and understand their inner worlds.`),
+  let lastStep = initialStep;
+
+  await initialStep.next(
+    internalMonologue("What will I disclose of my inner world to this person right now?")
+  );
+
+  const { stream, nextStep } = await initialStep.next(
+    spokenDialog(`Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`),
     { stream: true, model: "quality" }
   );
-  
+
   dispatch({
     action: "says",
     content: stream,
@@ -56,33 +62,62 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
     }
   });
 
-  let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
+  lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
 
-  // Boredom keeps these chatty birds from bankrupting Kev and Topper, and makes the ebb and flow of the group discussions more realistic.
+  // Inspired by Kevin's "Alfred", this offers the soul a way to navigate discussions more organically. 
+
+  const choice = await initialStep.compute(
+    decision("Will an interesting question, comment, or my silent observation move this discussion along more?", ["question", "comment", "quiet observation"])
+  );
+
+  log("Soul chooses:", choice);
+  
+  if (choice === "question") {
+  
+    let step = await initialStep.next(spokenDialog("Ask the user a follow-up question that progresses the discussion along."), 
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+
+  }
+
+  if (choice === "comment") {
+  
+    let step = await initialStep.next(spokenDialog("Make a comment that progresses the discussion along."), 
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+
+  }
+
+  if (choice === "silent observation") {
+    lastStep = initialStep;
+  }
+    
+  // Boredom keeps these chatty birds from going in circles.
 
   const isBored = await lastStep.compute(
-    mentalQuery("The discussion is starting to get boring, or feels like it's repeating itself")
+    mentalQuery("The discussion is boring, or repeating itself.")
   );
   log("Discussion is boring the soul?", isBored);
   if (isBored) {
     lastProcess.current = "boredom";
-    setNextProcess(boredom); // Correctly use setNextProcess
+    setNextProcess(boredom); 
     return lastStep;
   }
 
   // Awkwardness is a spell for silence like nothing else. 
 
   const isAwkward = await lastStep.compute(
-    mentalQuery("The discussion is getting awkward or offensive")
+    mentalQuery("The discussion is getting awkward or offensive.")
   );
   log("Discussion is too awkward for the soul?", isAwkward);
   if (isAwkward) {
     lastProcess.current = "awkward";
-    setNextProcess(awkward); // Correctly use setNextProcess
+    setNextProcess(awkward);
   }
 
   return lastStep;
 }
 
 export default gainsTrustWithTheUser;
-

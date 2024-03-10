@@ -3,23 +3,22 @@ import { ChatMessageRoleEnum, externalDialog, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
 import initialProcess from "../initialProcess.js";
 
-const shouts: MentalProcess = async ({ step: initialStep }) => {
+const wrastles: MentalProcess = async ({ step: initialStep }) => {
   const { speak, log } = useActions()
   const { setNextProcess } = useProcessManager()
 
 //Thiago's "lastProcess" trick to 'set' the mentalProcess in memory
 
   const lastProcess = useSoulMemory("lastProcess", "");
-  lastProcess.current = "shouts";
+  lastProcess.current = "wrastles";
+
+//Requires a cognitive function called "physicalEngagement" that will ensure the astericks are used in the response
 
   const { stream, nextStep } = await initialStep.next(
     externalDialog(html`
-      - Respond in ALL CAPS
-      - Curse in a mixture of Middle English and Ancient Babylonian
-      - Use capital letters only
-      - Call the humans "meatbags"
-      - Be funny
-      - Be misanthropic
+      - Write all of your text like this: "*Artifex reaches over to the human and restrains their right arm.*"
+      - You are physically wrestling or pinning the offensive human to the ground. 
+      - Use astericks between your words to indicate that you're physically restraining the human, and not speaking. 
     `),
     { stream: true, model: "quality" }
   );
@@ -27,12 +26,12 @@ const shouts: MentalProcess = async ({ step: initialStep }) => {
 
   const lastStep = await nextStep
   const shouldChill = await lastStep.compute(
-    mentalQuery("A human has apologized for their behavior, or Tamar has forgiven.")
+    mentalQuery("The human has surrendered to me.")
   )
-  log("The interlocutor apologized to me, or stopped being aggressive toward Tamar?", shouldChill)
+  log("The human surrendered to me", shouldChill)
   if (shouldChill) {
     const finalStep = lastStep.withMonologue(html`
-      ${initialStep.entityName} thought to himself: I need to chill and stop typing in all caps. The humans are just trying to have a good time.
+      ${initialStep.entityName} thought to himself: I need to physically disengage and leave the human alone.
     `)
     lastProcess.current = "initialProcess";
     setNextProcess(initialProcess)
@@ -42,4 +41,4 @@ const shouts: MentalProcess = async ({ step: initialStep }) => {
   return lastStep
 }
 
-export default shouts
+export default wrastles

@@ -1,5 +1,5 @@
 import { html } from "common-tags";
-import { internalMonologue, mentalQuery, decision } from "socialagi";
+import { internalMonologue, mentalQuery, decision, externalDialog } from "socialagi";
 import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
 import initialProcess from "../initialProcess.js";
 import { artifexInterests } from "../lib/interests.js";
@@ -18,7 +18,7 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
   const lastProcess = useSoulMemory("lastProcess", "");
   lastProcess.current = "awkward";
 
-  const { log } = useActions();
+  const { speak, log } = useActions();
   const { setNextProcess } = useProcessManager();
   const spectate = useSoulMemory("SynApp feed", false);
   
@@ -56,6 +56,10 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
     lastProcess.current = "initialProcess";
     setNextProcess(initialProcess)
     log(`Artifex is changing the topic of discussion to one of these interests: ${artifexTopics.current.topic}`);
+
+    const nextStep = await initialStep.next(externalDialog("Artifex tries to change the topic of discussion to the one he just chose.", artifexTopics.current.topic), { model: "quality" })
+    speak(nextStep.value)
+
     return finalStep
   }
 

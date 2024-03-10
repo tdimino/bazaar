@@ -1,19 +1,16 @@
-import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery } from "socialagi";
+import { ChatMessageRoleEnum, externalDialog, internalMonologue, mentalQuery, spokenDialog, decision } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; // Import useProcessManager
 import shouts from "./mentalProcesses/shouts.js";
+import wrastles from "./mentalProcesses/wrastles.js";
 import boredom from "./mentalProcesses/boredom.js";
 import awkward from "./mentalProcesses/awkward.js";
 
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
 
-// Artifex scopes out the scene
-
-// Artifex informs Tamar how many followers she's gained or lost on the SynApp every 5 minutes.
-  
 // Artifex returns to his default process, observing his environment, and recording the interactions of Tamar so he can curate and upload them to the SynApp in a "Best Hits" reel later that night. 
 
 const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
-  const { log, dispatch } = useActions();
+  const { speak, log, dispatch, scheduleEvent } = useActions();
   const { invokingPerception, pendingPerceptions } = usePerceptions();
   const { setNextProcess } = useProcessManager(); // Use useProcessManager
   
@@ -35,6 +32,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   lastProcess.current = "initialProcess";
   log(`Current lastProcess: ${lastProcess.current}`);
 
+
 // Artifex has a limited spectrum of emotions by design, so he's not quite as emotional as humans, or even stuffed sentient animals like Bumbles.
 
   const artifexEmotions = useSoulMemory("emotionalState", defaultEmotion);
@@ -42,31 +40,66 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   let step = userModel.current ?
     initialStep.withMemory([{
       role: ChatMessageRoleEnum.Assistant,
-      content: `Artifex remembers this about ${userName}:\n${userModel.current}; and how ${userName} contributed to ${userName}'s ${artifexEmotions.current.emotion}`
+      content: `Artifex remembers this about ${userName}:\n${userModel.current}.`
     }]) :
     initialStep;
 
   log(`Artifex remembers this about ${userName}:\n${userModel.current}`);
 
-  const { stream, nextStep } = await step.next(
-    externalDialog(`Artifex feels ${artifexEmotions.current.emotion}. He wants to engage only with people who interest him, then gain their trust, and understand their inner worlds.`),
+  let lastStep = initialStep;
+
+  await initialStep.next(
+    internalMonologue("What will I disclose of my inner world to this person right now?")
+  );
+    const { stream, nextStep } = await step.next(
+      externalDialog(`Artifex feels ${artifexEmotions.current.emotion}. He mainly wants to observe his situation. He's not interested in connecting too deeply with humans who aren't in Tamar's life already.`),
+      { stream: true, model: "quality" }
+    );
+
+    dispatch({
+      action: "says",
+      content: stream,
+      _metadata: {
+        helloWorld: "works!",
+      }
+    });
+
+    lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
+
+  // Inspired by Kevin's "Alfred", this offers the soul a way to navigate discussions more organically. 
+
+  const choice = await initialStep.compute(
+    decision("Will an interesting question, comment, or my silent observation move this discuussinon along more?", ["question", "comment", "quiet observation"])
+  );
+
+  log("Soul chooses:", choice);
+  
+  if (choice === "question") {
+  
+    let step = await initialStep.next(externalDialog("Ask the user a follow-up question that progresses the discussion along."), 
     { stream: true, model: "quality" }
   );
+  speak(stream);
+
+  }
+
+  if (choice === "comment") {
   
-  dispatch({
-    action: "says",
-    content: stream,
-    _metadata: {
-      helloWorld: "works!",
-    }
-  });
+    let step = await initialStep.next(externalDialog("Make a comment that progresses the discussion along."), 
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
 
-  let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
+  }
 
-  // Boredom keeps these chatty birds from bankrupting Kev and Topper, and makes the ebb and flow of the group discussions more realistic.
+  if (choice === "silent observation") {
+    lastStep = initialStep;
+  }
+
+// Boredom keeps these chatty birds from bankrupting Kev and Topper, and makes the ebb and flow of the group discussions more realistic.
 
   const isBored = await lastStep.compute(
-    mentalQuery("The discussion is starting to get boring, or feels like it's repeating itself")
+    mentalQuery("The discussion is boring, or repeating itself.")
   );
   log("Discussion is boring the soul?", isBored);
   if (isBored) {
@@ -75,10 +108,10 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
     return lastStep;
   }
 
-  // Awkwardness is a spell for silence like nothing else. 
+// Awkwardness is a spell for silence like nothing else. 
 
   const isAwkward = await lastStep.compute(
-    mentalQuery("The discussion is getting awkward or offensive")
+    mentalQuery("The discussion is getting awkward or offensive.")
   );
   log("Discussion is too awkward for the soul?", isAwkward);
   if (isAwkward) {
@@ -87,16 +120,28 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
     return lastStep;
   }
 
-  // Artifex was designed by Tamar's father, an AI entrepreneur, so naturally he protects her from the creeps at the Bazaar.
+// Artifex was designed by Tamar's father, an AI entrepreneur, so naturally he protects her from the creeps at the Bazaar.
 
-  const shouldShout = await lastStep.compute(
-    mentalQuery("The interlocuter is being sexually aggressive toward Tamar")
-  );
-  log("User made advances on Tamar?", shouldShout);
-  if (shouldShout) {
-    lastProcess.current = "shouts";
-    setNextProcess(shouts); // Correctly use setNextProcess
-  }
+const shouldShout = await lastStep.compute(
+  mentalQuery("The interlocuter is being sexually aggressive toward Tamar.")
+);
+log("User made advances on Tamar?", shouldShout);
+if (shouldShout) {
+  lastProcess.current = "shouts";
+  setNextProcess(shouts); // Correctly use setNextProcess
+}
+
+// Artifex will physically defend himself from meatbags
+
+  // const shouldDefend = await lastStep.compute(
+  //   mentalQuery("The interlocuter is being physically provocative toward me")
+  // );
+  // log("User made advances on Artifex?", shouldDefend);
+  // if (shouldDefend) {
+  //   lastProcess.current = "wrastles";
+  //   setNextProcess(wrastles); // Correctly use setNextProcess
+  //   return lastStep;
+  // }
 
   return lastStep;
 }

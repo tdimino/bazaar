@@ -19,7 +19,7 @@ const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
   const emotionalStep = await initialStep.next(internalMonologue(html`
     Artifex currently feels: ${artifexEmotions.current.emotion}.
     Has anything happened that would change how Artifex feels?
-    Respond with how Artifex is feeling. Make sure to include one of these emotions: ${androidEmotions.join(", ")} and a very short sentence as to why he feels that way because of ${userName}.
+    Respond with how Artifex is feeling. Make sure to include one of these emotions: ${androidEmotions.join(", ")} and a very short sentence as to why he feels that way.
   `, 'felt'))
   log("Artifex's feelings", emotionalStep.value)
 

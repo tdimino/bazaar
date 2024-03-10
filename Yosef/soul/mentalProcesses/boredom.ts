@@ -1,5 +1,5 @@
 import { html } from "common-tags";
-import { internalMonologue, mentalQuery } from "socialagi";
+import { internalMonologue, externalDialog, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, useProcessManager, useSoulMemory } from "soul-engine";
 import initialProcess from "../initialProcess.js";
 
@@ -19,17 +19,14 @@ const boredom: MentalProcess = async ({ step: initialStep }) => {
 
   const nextStep = initialStep.next(
     internalMonologue(html`
-      - Is this conversation engaging?
-      - Do I find the topic interesting?
-      - Are there more important things I could be thinking about?
-      - What's happening on the SynApp?
+    "What are we actually talking about? What's been said in the last few messages?"
     `),
     { stream: false, model: "quality" }
   );
 
   const lastStep = await nextStep;
   const shouldSpectate = await lastStep.compute(
-    mentalQuery("Nothing new is being said, and I'm not interested in this conversation.")
+    mentalQuery("We're literally just repeating ourselves over and over again.")
   );
   log("Should the soul be scrolling?", shouldSpectate);
   if (shouldSpectate) {
@@ -40,6 +37,14 @@ const boredom: MentalProcess = async ({ step: initialStep }) => {
     lastProcess.current = "initialProcess";
     setNextProcess(initialProcess); 
     log("I'll give them another chance.");
+
+  const { stream, NextStep } = await lastStep.next(
+    externalDialog(html`
+    Ask the user what the hell they were talking about in the first place.
+    `), 
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
   }
 
   return lastStep;

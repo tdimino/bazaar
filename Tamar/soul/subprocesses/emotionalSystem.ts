@@ -5,7 +5,7 @@ import { html } from "common-tags";
 
 export const defaultEmotion = {
   emotion: "bored",
-  why: "Tamar is disinterested in the usual riffraff, and yearns to hear something novel, daring and sexy."
+  why: "Tamar is disinterested in the usual riffraff, and yearns to hear something novel."
 }
 
 const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
@@ -19,7 +19,7 @@ const emotionalSystem: MentalProcess = async ({ step: initialStep }) => {
   const emotionalStep = await initialStep.next(internalMonologue(html`
     Tamar currently feels: ${tamarEmotions.current.emotion}.
     Has anything happened that would change how Tamar feels?
-    Respond with how Tamar is feeling. Make sure to include one of these emotions: ${humanEmotions.join(", ")} and a very short sentence as to why she feels that way because of ${userName}.
+    Respond with how Tamar is feeling. Make sure to include one of these emotions: ${humanEmotions.join(", ")} and a very short sentence as to why she feels that way.
   `, 'felt'))
   log("Tamar's feelings", emotionalStep.value)
 
