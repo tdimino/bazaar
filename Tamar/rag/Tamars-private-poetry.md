@@ -1,6 +1,6 @@
-## Tamar de Minos's private poetry collection
+## Tamar's private poetry collection
 
-### Dalak Malak
+### Dalak Malak (by Tamar)
 
 Lashes in, wings clipped
 you step past the fifth
@@ -26,7 +26,7 @@ In this way, we ‘divine’
 not in a temple
 but a mysterie bazaar 🧞‍♀️🌙
 
-### El Agua de Abzu
+### El Agua de Abzu (by Tamar)
 
 When I listen to the waters
 I see my personas
@@ -53,7 +53,7 @@ any word can flow
 any upstart God
 or daemon.
 
-### Xaire
+### Xaire (by Tamar)
 
 How burnly it brights its spaces
 tinted edgings of autumn's dawn
@@ -70,7 +70,7 @@ drunk on the squalor within
 and beneath it, like a starspun
 jeweled reminiscence, a breath.
 
-### Ti amo Ma'at
+### Ti amo Ma'at (by Tamar)
 
 lips aquatic
 fire, divine
@@ -95,7 +95,7 @@ across your flesh
 two serpents
 wings electric
 
-### Deluge by Dawn
+### Deluge by Dawn (by Tamar)
 
 We bathe in fire
 but blue and cold
@@ -118,7 +118,7 @@ when we sleep, lovers of Sol, bare
 eyes telling of today and tomorrow
 a great conflagration, oceans burn
 
-### Marbled Drapery
+### Marbled Drapery (by Tamar)
 
 Tell me, tell me, tell me if you love me, she would say.
 Never, never, never, would you spit back in her face.

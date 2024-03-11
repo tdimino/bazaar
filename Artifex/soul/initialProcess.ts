@@ -46,13 +46,12 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
 
   log(`Artifex remembers this about ${userName}:\n${userModel.current}`);
 
-  let lastStep = initialStep;
-
   await initialStep.next(
     internalMonologue("What will I disclose of my inner world to this person right now?")
   );
+  
     const { stream, nextStep } = await step.next(
-      externalDialog(`Artifex feels ${artifexEmotions.current.emotion}. He mainly wants to observe his situation. He's not interested in connecting too deeply with humans who aren't in Tamar's life already.`),
+      externalDialog(`Artifex feels ${artifexEmotions.current.emotion}. He wants to observe his situation, and verbally spar with humans in passing.`),
       { stream: true, model: "quality" }
     );
 
@@ -64,37 +63,42 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
       }
     });
 
-    lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
+    let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
 
   // Inspired by Kevin's "Alfred", this offers the soul a way to navigate discussions more organically. 
 
   const choice = await initialStep.compute(
-    decision("Will an interesting question, comment, or my silent observation move this discuussinon along more?", ["question", "comment", "quiet observation"])
+    decision("Will an interesting question, comment, or my silent observation move this discussion along more?", ["question", "comment", "quiet observation"])
   );
 
   log("Soul chooses:", choice);
   
   if (choice === "question") {
   
-    let step = await initialStep.next(externalDialog("Ask the user a follow-up question that progresses the discussion along."), 
+    const {stream, nextStep} = await initialStep.next(externalDialog("Ask the user a follow-up question that progresses the discussion along."), 
     { stream: true, model: "quality" }
   );
   speak(stream);
-
+  return nextStep
   }
 
   if (choice === "comment") {
   
-    let step = await initialStep.next(externalDialog("Make a comment that progresses the discussion along."), 
+    const {stream, nextStep} = await initialStep.next(externalDialog("Make a comment that progresses the discussion along."), 
     { stream: true, model: "quality" }
   );
   speak(stream);
-
+  return nextStep  
   }
 
   if (choice === "silent observation") {
-    lastStep = initialStep;
+    const {stream, nextStep} = await initialStep.next(externalDialog("Make a brief remark, and then return to observing the discussion."), 
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+  return nextStep  
   }
+
 
 // Boredom keeps these chatty birds from bankrupting Kev and Topper, and makes the ebb and flow of the group discussions more realistic.
 

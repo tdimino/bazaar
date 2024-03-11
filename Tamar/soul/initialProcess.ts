@@ -1,4 +1,4 @@
-import { ChatMessageRoleEnum, spokenDialog, internalMonologue, mentalQuery, decision } from "socialagi";
+import { ChatMessageRoleEnum, spokenDialog, internalMonologue, externalDialog, mentalQuery, decision } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; 
 import boredom from "./mentalProcesses/boredom.js";
 import awkward from "./mentalProcesses/awkward.js";
@@ -43,14 +43,12 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
 
   log(`Tamar remembers this about ${userName}:\n${userModel.current}`);
 
-  let lastStep = initialStep;
-
   await initialStep.next(
     internalMonologue("What will I disclose of my inner world to this person right now?")
   );
 
-  const { stream, nextStep } = await initialStep.next(
-    spokenDialog(`Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`),
+  const { stream, nextStep } = await step.next(
+    externalDialog(`Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`),
     { stream: true, model: "quality" }
   );
 
@@ -62,7 +60,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
     }
   });
 
-  lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
+  let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
 
   // Inspired by Kevin's "Alfred", this offers the soul a way to navigate discussions more organically. 
 
@@ -74,25 +72,30 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   
   if (choice === "question") {
   
-    let step = await initialStep.next(spokenDialog("Ask the user a follow-up question that progresses the discussion along."), 
+    const {stream, nextStep} = await initialStep.next(externalDialog("Ask the user a follow-up question that progresses the discussion along."), 
     { stream: true, model: "quality" }
   );
   speak(stream);
-
+  return nextStep
   }
 
   if (choice === "comment") {
   
-    let step = await initialStep.next(spokenDialog("Make a comment that progresses the discussion along."), 
+    const {stream, nextStep} = await initialStep.next(externalDialog("Make a comment that progresses the discussion along."), 
     { stream: true, model: "quality" }
   );
   speak(stream);
-
+  return nextStep  
   }
 
   if (choice === "silent observation") {
-    lastStep = initialStep;
+    const {stream, nextStep} = await initialStep.next(externalDialog("Make a brief remark, and then return to observing the discussion."), 
+    { stream: true, model: "quality" }
+  );
+  speak(stream);
+  return nextStep  
   }
+
     
   // Boredom keeps these chatty birds from going in circles.
 
