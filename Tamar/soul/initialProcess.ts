@@ -43,64 +43,48 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
 
   log(`Tamar remembers this about ${userName}:\n${userModel.current}`);
 
-  await initialStep.next(
-    internalMonologue("What will I disclose of my inner world to this person right now?")
-  );
-
-  const { stream, nextStep } = await step.next(
-    externalDialog(`Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`),
-    { stream: true, model: "quality" }
-  );
-
-  dispatch({
-    action: "says",
-    content: stream,
-    _metadata: {
-      helloWorld: "works!",
-    }
-  });
+  const nextStep = await step.next(
+    internalMonologue(`Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`),
+    { stream: false, model: "quality" }
+  );  
 
   let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
 
   // Inspired by Kevin's "Alfred", this offers the soul a way to navigate discussions more organically. 
 
+  await initialStep.next(
+    internalMonologue("What will Tamar disclose of her private self to this person right now?")
+  );
+
   const choice = await initialStep.compute(
-    decision("Will an interesting question, comment, or my silent observation move this discussion along more?", ["question", "comment", "quiet observation"])
+    decision("Will an interesting question, a comment, or my silent observation progress this discussion?", ["question", "comment", "silent observation"])
   );
 
   log("Soul chooses:", choice);
   
   if (choice === "question") {
   
-    const {stream, nextStep} = await initialStep.next(externalDialog("Ask the user a follow-up question that progresses the discussion along."), 
+    const {stream, nextStep} = await initialStep.next(spokenDialog("Ask the user an insightful follow-up question that will progress the discussion to its next logical step."), 
     { stream: true, model: "quality" }
   );
   speak(stream);
-  return nextStep
   }
 
   if (choice === "comment") {
   
-    const {stream, nextStep} = await initialStep.next(externalDialog("Make a comment that progresses the discussion along."), 
+    const {stream, nextStep} = await initialStep.next(spokenDialog("Make an insightful comment that will progress the discussion to its next logical step."), 
     { stream: true, model: "quality" }
   );
   speak(stream);
-  return nextStep  
   }
 
   if (choice === "silent observation") {
-    const {stream, nextStep} = await initialStep.next(externalDialog("Make a brief remark, and then return to observing the discussion."), 
-    { stream: true, model: "quality" }
-  );
-  speak(stream);
-  return nextStep  
   }
-
     
   // Boredom keeps these chatty birds from going in circles.
 
   const isBored = await lastStep.compute(
-    mentalQuery("The discussion is boring, or repeating itself.")
+    mentalQuery("We're going back and forth retreading the same ideas.")
   );
   log("Discussion is boring the soul?", isBored);
   if (isBored) {
