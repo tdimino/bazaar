@@ -57,7 +57,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   );
 
   const choice = await initialStep.compute(
-    decision("Will an interesting question, a comment, or my silent observation progress this discussion?", ["question", "comment", "silent observation"])
+    decision("Will an interesting question, a comment, or my silent observation progress this discussion along?", ["question", "comment", "silent observation"])
   );
 
   log("Soul chooses:", choice);
