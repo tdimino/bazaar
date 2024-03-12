@@ -1,0 +1,1 @@
+// Will function like externalDialog, but allow the soul to use astericks to denote physical movements.
