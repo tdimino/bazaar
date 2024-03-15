@@ -21,8 +21,10 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   }
 
   const discordMessage = invokingPerception?._metadata?.discordMessage as any;
-  const userName = discordMessage?.username || "Anonymous";
+  const userName = discordMessage?.nickname || "Anonymous";
   const userModel = useSoulMemory(userName, "");
+  const selfModel = useSoulMemory("selfModel", "");
+
 
   //Thiago's "lastProcess" trick to 'set' the mentalProcess in memory
 
@@ -37,7 +39,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   let step = userModel.current ?
     initialStep.withMemory([{
       role: ChatMessageRoleEnum.Assistant,
-      content: `Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`
+      content: `Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants. And Tamar remembers this about herself: \n${selfModel.current}`
     }]) :
     initialStep;
 

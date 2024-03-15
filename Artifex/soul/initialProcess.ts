@@ -22,7 +22,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   }
 
   const discordMessage = invokingPerception?._metadata?.discordMessage as any;
-  const userName = discordMessage?.username || "Anonymous";
+  const userName = discordMessage?.nickname || "Anonymous";
   const userModel = useSoulMemory(userName, "");
   const selfModel = useSoulMemory("selfModel", "");
 

@@ -21,8 +21,10 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   }
 
   const discordMessage = invokingPerception?._metadata?.discordMessage as any;
-  const userName = discordMessage?.username || "Anonymous";
+  const userName = discordMessage?.nickname || "Anonymous";
   const userModel = useSoulMemory(userName, "");
+  const selfModel = useSoulMemory("selfModel", "");
+
 
   //Thiago's "lastProcess" trick to 'set' the mentalProcess in memory
 
@@ -44,7 +46,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   log(`Yosef remembers this about ${userName}:\n${userModel.current}`);
 
   let nextStep = await initialStep.next(
-    internalMonologue(`Yosef feels ${yosefEmotions.current.emotion}. He's keen on understanding the environment, and being authentic in every interaction'.`),
+    internalMonologue(`Yosef feels ${yosefEmotions.current.emotion}. He's keen on understanding the environment, and being authentic in every interaction'. And Yosef remembers this about himself: \n${selfModel.current}`),
     { stream: false, model: "quality" }
   );
 

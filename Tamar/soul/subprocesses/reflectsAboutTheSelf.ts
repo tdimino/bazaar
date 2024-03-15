@@ -29,7 +29,7 @@ const selfNotes = () => () => ({
 })
 
 const reflectsAboutTheSelf: MentalProcess = async ({ step: initialStep }) => {
-  const selfModel = useProcessMemory("Self")
+  const selfModel = useProcessMemory("selfModel")
   const { log } = useActions()
 
   let step = initialStep
