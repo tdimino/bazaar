@@ -44,8 +44,9 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
     log("Refreshing my SynApp feed.");
   } else {
     const finalStep = lastStep.withMonologue(html`
-      ${initialStep.entityName} thought to himself: Respond with the topic that Yosef would rather talk about. Make sure to include one of these topics: ${yosefInterests.join(", ")} and a very short sentence as to why he chose that one.
+      Respond with the topic that Yosef would rather talk about. Make sure to include one of these topics: ${yosefInterests.join(", ")} and a very short sentence as to why he chose that one.
     `)
+    log("Yosef's topic", finalStep.value)
 
     const extractedTopic = await finalStep.compute(decision("Extract the topic of interest that Yosef just said they want to shift over to.", yosefInterests)) 
 
@@ -57,10 +58,8 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
     setNextProcess(initialProcess)
     log(`Yosef is changing the topic of discussion to one of these interests: ${yosefTopics.current.topic}`);
 
-    const nextStep = await initialStep.next(externalDialog("Yosef tries to change the topic of discussion to the one he just chose.", yosefTopics.current.topic), { model: "quality" })
+    const nextStep = await initialStep.next(externalDialog("Yosef asks the user if they'd actually be interested in discussing this topic of conversation instead.", yosefTopics.current.topic), { model: "quality" })
     speak(nextStep.value)
-
-    return finalStep
   }
 
   return lastStep;

@@ -2,21 +2,20 @@ import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, internalMonologue, mentalQuery } from "socialagi";
 import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
 
-const userNotes = () => () => ({
+const selfNotes = () => () => ({
   command: ({ entityName: name }: CortexStep) => {
     return html`
       Model the mind of ${name}.
       
       ## Description
-      Write an updated and clear set of notes on the user that ${name} would want to remember, based on their interactions thus far.
+      Write an updated and clear set of notes on how ${name} is likely perceived by the user, based exclusively on their conversation thus far. 
 
       ## Rules
       * Keep descriptions as bullet points
       * Keep relevant bullet points from before
       * Use abbreviated language to keep the notes short
-      * Do not write any notes about ${name}
 
-      Please reply with the updated notes on the user:'
+      Please reply with the updated notes on your self:'
   `},
   process: (_step: CortexStep<any>, response: string) => {
     return {
@@ -29,8 +28,8 @@ const userNotes = () => () => ({
   }
 })
 
-const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
-  const userModel = useProcessMemory("Unknown user")
+const reflectsAboutTheSelf: MentalProcess = async ({ step: initialStep }) => {
+  const selfModel = useProcessMemory("selfModel")
   const { log } = useActions()
 
   let step = initialStep
@@ -40,25 +39,25 @@ const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
     content: html`
     ${step.entityName} remembers:
 
-    # user model
+    # Self model
 
-    ${userModel.current}
+    ${selfModel.current}
   `
   }])
 
   step = await step.next(
-    internalMonologue("What have I learned specifically about the user from the last few messages?", "noted"),
+    internalMonologue("What has the user learned specifically about me from the last few messages?", "noted"),
     { model: "quality" }
   )
   log("Learnings:", step.value)
-  userModel.current = await step.compute(userNotes())
+  selfModel.current = await step.compute(selfNotes())
 
-  const thought = await step.compute(internalMonologue("What should I think to myself to change my behavior? Start with 'I need...'", "thinks"))
-  finalStep = initialStep.withMonologue(html`
-    ${step.entityName} thought to himself: ${thought}
-  `)
+  // const thought = await step.compute(internalMonologue("Is the user accurately perceiving me? Should I adjust my behavior in any way?", "thinks"))
+  // finalStep = initialStep.withMonologue(html`
+  //   ${step.entityName} thought to himself: ${thought}
+  // `)
 
   return finalStep
 }
 
-export default learnsAboutTheUser
+export default reflectsAboutTheSelf

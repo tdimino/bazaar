@@ -1,4 +1,4 @@
-import { ChatMessageRoleEnum, spokenDialog, internalMonologue, externalDialog, mentalQuery, decision } from "socialagi";
+import { ChatMessageRoleEnum, internalMonologue, externalDialog, mentalQuery, decision } from "socialagi";
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine"; 
 import boredom from "./mentalProcesses/boredom.js";
 import awkward from "./mentalProcesses/awkward.js";
@@ -43,44 +43,49 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
 
   log(`Tamar remembers this about ${userName}:\n${userModel.current}`);
 
-  const nextStep = await step.next(
+  let nextStep = await initialStep.next(
     internalMonologue(`Tamar feels ${tamarEmotions.current.emotion}. She's not interested in talking with sycophants.`),
     { stream: false, model: "quality" }
   );  
 
-  let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
-
   // Inspired by Kevin's "Alfred", this offers the soul a way to navigate discussions more organically. 
 
-  await initialStep.next(
-    internalMonologue("What will Tamar disclose of her private self to this person right now?")
+  nextStep = await nextStep.next(
+    internalMonologue("What will Tamar disclose of her private self to this person right now?"),
+    { stream: false, model: "quality" }
   );
 
-  const choice = await initialStep.compute(
-    decision("Will an interesting question, a comment, or my silent observation progress this discussion along?", ["question", "comment", "silent observation"])
+  log("Soul reflects:", nextStep.value);
+
+  const choice = await nextStep.compute(
+    decision("Will an interesting question, a comment, or my silent observation progress this discussion?", ["question", "comment", "silent observation"])
   );
 
   log("Soul chooses:", choice);
   
   if (choice === "question") {
-  
-    const {stream, nextStep} = await initialStep.next(spokenDialog("Ask the user an insightful follow-up question that will progress the discussion to its next logical step."), 
-    { stream: true, model: "quality" }
-  );
-  speak(stream);
+    const {stream, nextStep: updatedNextStep} = await nextStep.next(
+      externalDialog("Ask the user an insightful follow-up question that will progress the discussion to its next logical step."), 
+      { stream: true, model: "quality" }
+    );
+    speak(stream);
+    nextStep = await updatedNextStep;
   }
 
   if (choice === "comment") {
-  
-    const {stream, nextStep} = await initialStep.next(spokenDialog("Make an insightful comment that will progress the discussion to its next logical step."), 
-    { stream: true, model: "quality" }
-  );
-  speak(stream);
+    const {stream, nextStep: updatedNextStep} = await nextStep.next(
+      externalDialog("Make an insightful comment that will progress the discussion to its next logical step."), 
+      { stream: true, model: "quality" }
+    );
+    speak(stream);
+    nextStep = await updatedNextStep;
   }
 
   if (choice === "silent observation") {
   }
-    
+
+  let lastStep = initialStep.withMemory((await nextStep).memories.slice(-1));
+
   // Boredom keeps these chatty birds from going in circles.
 
   const isBored = await lastStep.compute(

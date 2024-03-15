@@ -38,7 +38,7 @@ const boredom: MentalProcess = async ({ step: initialStep }) => {
     setNextProcess(initialProcess); 
     log("I'll give them another chance.");
 
-  const { stream, NextStep } = await lastStep.next(
+  const { stream, nextStep } = await lastStep.next(
     externalDialog(html`
     Ask the user what the hell they were talking about in the first place.
     `), 

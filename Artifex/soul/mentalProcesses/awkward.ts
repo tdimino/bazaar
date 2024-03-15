@@ -22,7 +22,7 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
   const { setNextProcess } = useProcessManager();
   const spectate = useSoulMemory("SynApp feed", false);
   
-  const artifexTopics = useSoulMemory("Topic of interest", defaultTopic)
+  const artifexTopics = useSoulMemory("artifexTopics", defaultTopic)
 
 // Logging the current value of lastProcess
   log(`Current lastProcess: ${lastProcess.current}`);
@@ -44,8 +44,9 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
     log("Refreshing my SynApp feed.");
   } else {
     const finalStep = lastStep.withMonologue(html`
-      ${initialStep.entityName} thought to himself: Respond with the topic that Artifex would rather talk about. Make sure to include one of these topics: ${artifexInterests.join(", ")} and a very short sentence as to why he chose that one.
+      Respond with the topic that Artifex would rather talk about. Make sure to include one of these topics: ${artifexInterests.join(", ")} and a very short sentence as to why he chose that one.
     `)
+    log("Artifex's topic", finalStep.value)
 
     const extractedTopic = await finalStep.compute(decision("Extract the topic of interest that Artifex just said they want to shift over to in conversation.", artifexInterests)) 
 
@@ -53,14 +54,14 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
       topic: extractedTopic.toString(),
       why: finalStep.value
     }
+
     lastProcess.current = "initialProcess";
     setNextProcess(initialProcess)
+
     log(`Artifex is changing the topic of discussion to one of these interests: ${artifexTopics.current.topic}`);
 
-    const nextStep = await initialStep.next(externalDialog("Artifex tries to change the topic of discussion to the one he just chose.", artifexTopics.current.topic), { model: "quality" })
+    const nextStep = await initialStep.next(externalDialog("Artifex asks the user if they'd actually be interested in discussing this topic of conversation instead.", artifexTopics.current.topic), { model: "quality" })
     speak(nextStep.value)
-
-    return finalStep
   }
 
   return lastStep;

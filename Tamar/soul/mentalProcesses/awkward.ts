@@ -44,8 +44,9 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
     log("Shaking off this awkwardness.");
   } else {
     const finalStep = lastStep.withMonologue(html`
-      ${initialStep.entityName} thought to himself: Respond with the topic that Tamar would rather talk about. Make sure to include one of these topics: ${tamarInterests.join(", ")} and a very short sentence as to why she chose that one.
+      Respond with the topic that Tamar would rather talk about. Make sure to include one of these topics: ${tamarInterests.join(", ")} and a very short sentence as to why she chose that one.
     `)
+    log("Tamar's topic", finalStep.value)
 
     const extractedTopic = await finalStep.compute(decision("Extract the topic of interest that Tamar just said she wants to shift to in conversation.", tamarInterests)) 
 
@@ -53,15 +54,14 @@ const awkward: MentalProcess = async ({ step: initialStep }) => {
       topic: extractedTopic.toString(),
       why: finalStep.value
     }
+    
     lastProcess.current = "initialProcess";
     setNextProcess(initialProcess)
 
     log(`Tamar is changing the topic of discussion to one of these interests: ${tamarTopics.current.topic}`);
 
-    const nextStep = await initialStep.next(externalDialog("Tamar tries to change the topic of discussion to the one she just chose.", tamarTopics.current.topic), { model: "quality" })
+    const nextStep = await initialStep.next(externalDialog("Tamar asks the user if they'd actually be interested in discussing this topic of conversation instead.", tamarTopics.current.topic), { model: "quality" })
     speak(nextStep.value)
-
-    return finalStep
   }
 
   return lastStep;
