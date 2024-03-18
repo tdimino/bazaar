@@ -1,18 +1,21 @@
 import { html } from "common-tags";
 import { ChatMessageRoleEnum, CortexStep, internalMonologue, mentalQuery } from "socialagi";
-import { MentalProcess, useActions, useProcessMemory } from "soul-engine";
+import { MentalProcess, useActions } from "soul-engine";
 
-const userNotes = () => () => ({
+import { fetchUserContext } from "../util/fetchUserContext.js";
+
+const userNotes = (userName: string) => () => ({
   command: ({ entityName: name }: CortexStep) => {
     return html`
       Model the mind of ${name}.
       
       ## Description
-      Write an updated and clear set of notes on the user that ${name} would want to remember.
+      Write an updated and clear set of notes on the user that ${name} would want to remember, based on their interactions thus far.
 
       ## Rules
       * Keep descriptions as bullet points
       * Keep relevant bullet points from before
+      * Analyze the user's emotional state
       * Use abbreviated language to keep the notes short
       * Do not write any notes about ${name}
 
@@ -30,35 +33,22 @@ const userNotes = () => () => ({
 })
 
 const learnsAboutTheUser: MentalProcess = async ({ step: initialStep }) => {
-  const userModel = useProcessMemory("Unknown user")
   const { log } = useActions()
+  const { userName, userModel } = fetchUserContext();
 
   let step = initialStep
-  let finalStep = initialStep
-  step = step.withMemory([{
-    role: ChatMessageRoleEnum.Assistant,
-    content: html`
-    ${step.entityName} remembers:
 
-    # User model
+  const modelQuery = await step.compute(mentalQuery(`${step.entityName} has learned something new and they need to update the mental model of ${userName}.`));
 
-    ${userModel.current}
-  `
-  }])
+  log("Update model?", userName, modelQuery)
 
-  step = await step.next(
-    internalMonologue("What have I learned specifically about the interlocutor from their last few messages?", "noted"),
-    { model: "quality" }
-  )
-  log("Learnings:", step.value)
-  userModel.current = await step.compute(userNotes())
+  if (modelQuery) {
+    step = await step.next(internalMonologue(`What has ${step.entityName} learned specifically about their Bazaar companion from the last few messages?`, "noted"))
+    log("Learnings:", step.value)
+    userModel.current = await step.compute(userNotes(userName))
+  }
 
-  const thought = await step.compute(internalMonologue("What should I think to myself to change my behavior? Start with 'I need...'", "thinks"))
-  finalStep = initialStep.withMonologue(html`
-    ${step.entityName} thought to herself: ${thought}
-  `)
-
-  return finalStep
+  return initialStep
 }
 
 export default learnsAboutTheUser
