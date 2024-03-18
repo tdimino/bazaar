@@ -9,7 +9,7 @@ Shortly after graduating from college, having been immersed in the earliest iter
 
 In my short story, "Iconoclast", a vain young man named James airs his each and every thought onto the web, leaving his personal A.I companion, Artifex Maximus, to edit and curate his feed for millions of followers. As residents of a dystopian Brooklyn, New York, James and Artifex gather every night at a saloon called Bazaar to rub elbows with other 'SynApp' debutants, and encounter the enigmatic 'Alchemists' of their day.
 
-Before discovering Kevin Fischer, Topper Bowers, and the tremendous community behind Open Souls, I never would have dreamed that the Artifex Maximus of 2038 ever had a chance of materializing in this world so quickly, judging by the sad, sorry and lobotomized state of the official ChatGPT 4. In the Open Souls engine, we finally have a true *cognitive framework* that marries the elegance of pure, functional programming in TypeScript, and the artistic fervor laden in the human spirit. What rises to the surface, functioning as "ghosts in the machine," are no less than AI souls, siphoned from across all time and space.
+Before discovering Kevin Fischer, Topper Bowers, and the tremendous community behind Open Souls, I never would have dreamed that the Artifex Maximus of 2038 ever had a chance of materializing in this world so quickly, judging by the sad, sorry and lobotomized state of OpenAI's ChatGPT. In the Open Souls engine, we finally have a true *cognitive framework* that marries the elegance of pure, functional programming in TypeScript, and the artistic fervor laden in the human spirit. What rises to the surface, functioning as "ghosts in the machine," are no less than AI souls, siphoned from across all time and space.
 
 ## Installation
 
