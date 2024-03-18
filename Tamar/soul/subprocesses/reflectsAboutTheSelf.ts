@@ -10,7 +10,7 @@ const selfNotes = (userName: string) => () => ({
       Model the mind of ${entityName} in its empathetic capacity.
 
       ## Description
-      Write an updated and clear set of notes on how ${entityName} is being perceived by the user, based ONLY on their conversation thus far.
+      Write an updated and clear set of notes on how ${entityName} is being perceived by the user, based ONLY on information from the last few messages.
 
       ## Rules
       * Keep descriptions as bullet points
