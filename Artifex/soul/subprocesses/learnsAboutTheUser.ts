@@ -10,7 +10,7 @@ const userNotes = (userName: string) => () => ({
       Model the mind of ${name}.
       
       ## Description
-      Write an updated and clear set of notes on the user that ${name} would want to remember, based on their interactions thus far.
+      Write an updated and clear set of notes on the user that ${name} would want to remember.
 
       ## Rules
       * Keep descriptions as bullet points

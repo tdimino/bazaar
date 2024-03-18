@@ -7,16 +7,19 @@ import { fetchUserContext } from "../util/fetchUserContext.js";
 const selfNotes = (userName: string) => () => ({
   command: ({ entityName }: CortexStep) => {
     return html`
+      Model the mind of ${entityName} in its empathetic capacity.
+
       ## Description
-      Write an updated and clear set of notes on how ${entityName} is probably being perceived by the user, based on their conversation thus far.
+      Write an updated and clear set of notes on how ${entityName} is being perceived by the user, based ONLY on their conversation thus far.
 
       ## Rules
       * Keep descriptions as bullet points
       * Keep relevant bullet points from before
-      * Analyze ${entityName}'s perceived emotional state by the user
+      * Analyze ${entityName}'s perceived emotional state
       * Use abbreviated language to keep the notes short
+      * DO NOT write notes about ${userName}
 
-      Please reply with the updated notes on your self.
+      Please reply with the updated notes on how ${entityName} is being perceived by the user.
   `},
   process: (_step: CortexStep<any>, response: string) => {
     return {
