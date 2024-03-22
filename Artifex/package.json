@@ -25,7 +25,9 @@
     "dotenv": "^16.4.1",
     "lodash": "^4.17.21",
     "socialagi": "~0.1.7",
-    "soul-engine": "^0.0.47"
+    "soul-engine": "^0.0.47",
+    "turndown": "^7.1.3",
+    "puppeteer": "^22.5.0"
   }
 }
 

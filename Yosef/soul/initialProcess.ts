@@ -2,6 +2,7 @@ import { ChatMessageRoleEnum, externalDialog, internalMonologue, decision, menta
 import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessManager } from "soul-engine";
 import boredom from "./mentalProcesses/boredom.js";
 import awkward from "./mentalProcesses/awkward.js";
+import { externalActions } from "./cognitiveFunctions/externalActions.js";
 import { fetchUserContext } from "./util/fetchUserContext.js"; 
 
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
@@ -84,7 +85,13 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   }
 
   if (choice === "silent observation") {
-  }
+    const {stream, nextStep: silentStep} = await step.next(
+      externalActions(`Describe Yosef's body language at this moment.`), 
+      { stream: true, model: "quality" }
+    );
+    speak(stream);
+    lastStep = await silentStep;
+  } 
   // Boredom keeps these chatty birds from going in circles.
 
   const isBored = await lastStep.compute(

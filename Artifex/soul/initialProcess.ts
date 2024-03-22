@@ -3,6 +3,7 @@ import { MentalProcess, useActions, usePerceptions, useSoulMemory, useProcessMan
 import shouts from "./mentalProcesses/shouts.js";
 import boredom from "./mentalProcesses/boredom.js";
 import awkward from "./mentalProcesses/awkward.js";
+import { externalActions } from "./cognitiveFunctions/externalActions.js";
 import { fetchUserContext } from "./util/fetchUserContext.js"; 
 
 import { defaultEmotion } from "./subprocesses/emotionalSystem.js";
@@ -87,6 +88,12 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   }
 
   if (choice === "silent observation") {
+    const {stream, nextStep: silentStep} = await step.next(
+      externalActions(`Describe Artifex's body language at this moment.`), 
+      { stream: true, model: "quality" }
+    );
+    speak(stream);
+    lastStep = await silentStep;
   }
 
 // // Artifex will physically defend himself from meatbags
@@ -109,7 +116,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   log("Discussion is boring the soul?", isBored);
   if (isBored) {
     lastProcess.current = "boredom";
-    setNextProcess(boredom); // Correctly use setNextProcess
+    setNextProcess(boredom); 
     return lastStep;
   }
 
@@ -121,7 +128,7 @@ const gainsTrustWithTheUser: MentalProcess = async ({ step: initialStep }) => {
   log("Discussion is too awkward for the soul?", isAwkward);
   if (isAwkward) {
     lastProcess.current = "awkward";
-    setNextProcess(awkward); // Correctly use setNextProcess
+    setNextProcess(awkward); 
     return lastStep;
   }
 

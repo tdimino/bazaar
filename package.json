@@ -23,7 +23,9 @@
     "concurrently": "^8.2.2",
     "discord.js": "^14.14.1",
     "dotenv": "^16.4.1",
+    "puppeteer": "^22.5.0",
     "socialagi": "~0.1.7",
-    "soul-engine": "^0.0.47"
+    "soul-engine": "^0.0.47",
+    "turndown": "^7.1.3"
   }
 }
