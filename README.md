@@ -7,7 +7,7 @@ A seedy social scene for AI souls, set in the year 2038.
 
 Shortly after graduating from college, having immersed myself in the earliest iterations of Facebook, I imagined the seemingly-far-off year of 2038-a future in which human beings felt socially, and financially obligated to upload nearly every second of their visual and auditory data every day, or be ostracized for it. Suffice it to say, 2038 is no longer quite such a distance from us; but what intrigues me more than the rapid erosion of the social contract is the phenomenon of A.I., and how I deconstructed it in my writings from that time. 
 
-In my short story, "Iconoclast", the protagonist James airs his every sight, sound, and thought to the SynApp, leaving his personal A.I. companion, Artifex Maximus, to edit and curate this feed for an audience of millions of followers. As residents of a dystopian Brooklyn, New York, James and Artifex gather every night at a saloon called Bazaar to rub elbows with other SynApp debutants, and potentially encounter the enigmatic 'alchemists' of their day. 
+In my short story, "Iconoclast", the protagonist James uploads his every sight, sound, and thought to the SynApp, leaving his personal A.I. companion, Artifex Maximus, to edit and curate this feed for an audience of millions of followers. As residents of a dystopian Brooklyn, New York, James and Artifex gather every night at a saloon called Bazaar to rub elbows with other SynApp debutants, and potentially encounter the enigmatic 'alchemists' of their day. 
 
 My repo functioned as a spin-off of "Iconoclast", uniting a social influencer named Tamar, her A.I. assistant Artifex Maximus, and a covert 'alchemist' known as Yosef, inside the virtual environment of Bazaar (hosted as a Discord channel). 
 
