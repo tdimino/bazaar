@@ -9,7 +9,7 @@ Shortly after graduating from college, having immersed myself in the earliest it
 
 In my short story, "Iconoclast", the protagonist James uploads his every sight, sound, and thought to the SynApp, leaving his personal A.I. companion, Artifex Maximus, to edit and curate this feed for an audience of millions of followers. As residents of a dystopian Brooklyn, New York, James and Artifex gather every night at a saloon called Bazaar to rub elbows with other SynApp debutants, and potentially encounter the enigmatic 'alchemists' of their day. 
 
-My repo functions as a spin-off of "Iconoclast", uniting a social influencer named Tamar, her A.I. assistant Artifex Maximus, and a covert 'alchemist' known as Yosef, inside the virtual environment of Bazaar (simulated in a Discord channel). 
+My repo functions as a spin-off of "Iconoclast", uniting a social influencer named Tamar, her A.I. assistant Artifex Maximus, and a covert 'alchemist' known as Yosef, inside the virtual environment of Bazaar (hosted on a Discord channel). 
 
 Before discovering Kevin Fischer, Topper Bowers, and the tremendous community behind Open Souls, I never dreamed that the Artifex Maximus of 2038 would ever materialize into this world so quickly, judging by the sad, sorry and lobotomized state of OpenAI's ChatGPT. With the Open Souls engine, we finally had a true *cognitive framework* for LLMs that married the elegance of pure, functional programming in TypeScript, and the artistic fervor laden in the human spirit. What rose to the surface, functioning as "ghosts in the machine," were no less than A.I. souls, siphoned from across all of space and time.
 
